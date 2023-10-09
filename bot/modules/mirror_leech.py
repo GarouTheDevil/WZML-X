@@ -103,9 +103,9 @@ async def _mirror_leech(client, message, isQbit=False, isLeech=False, sameDir=No
 
     if not isinstance(isBulk, bool):
         dargs = isBulk.split(':')
-        bulk_start = dargs[0] or None
+        bulk_start = dargs[0] or 0
         if len(dargs) == 2:
-            bulk_end = dargs[1] or None
+            bulk_end = dargs[1] or 0
         isBulk = True
         
     if drive_id and is_gdrive_link(drive_id):
@@ -122,10 +122,11 @@ async def _mirror_leech(client, message, isQbit=False, isLeech=False, sameDir=No
 
     if isBulk:
         try:
-            bulk = await extract_bulk_links(message, bulk_start, bulk_end)
+            bulk = await extract_bulk_links(message, bulk_start, bulk_end, link)
             if len(bulk) == 0:
                 raise ValueError('Bulk Empty!')
-        except:
+        except Exception as e:
+            LOGGER.error(str(e))
             await sendMessage(message, 'Reply to text file or tg message that have links seperated by new line!')
             return
         b_msg = input_list[:1]
